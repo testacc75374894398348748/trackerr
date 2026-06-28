@@ -1,0 +1,172 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:FinanceTracker.ViewModels"
+        x:Class="FinanceTracker.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="Трекер личных финансов"
+        Width="950" Height="620"
+        Background="#F8FAFC">
+
+  <DockPanel>
+
+    <!-- Шапка -->
+    <Border DockPanel.Dock="Top" Background="#0B2B33" Padding="20,14">
+      <TextBlock Text="💼  Трекер личных финансов"
+                 Foreground="White" FontSize="20" FontWeight="Bold"/>
+    </Border>
+
+    <!-- Статус-бар -->
+    <Border DockPanel.Dock="Bottom" Background="#F1F5F9" Padding="20,6">
+      <TextBlock Text="{Binding Status}" Foreground="#64748B" FontSize="12"/>
+    </Border>
+
+    <!-- Карточки баланса -->
+    <Border DockPanel.Dock="Top" Padding="20,12">
+      <StackPanel Orientation="Horizontal" Spacing="16">
+
+        <Border Background="White" CornerRadius="8" Padding="18,12" Width="190"
+                BoxShadow="0 2 6 0 #14000000">
+          <StackPanel>
+            <TextBlock Text="Баланс" Foreground="#64748B" FontSize="12"/>
+            <TextBlock Text="{Binding Balance, StringFormat='{}{0:N2} ₽'}"
+                       FontSize="22" FontWeight="Bold" Foreground="#028090"/>
+          </StackPanel>
+        </Border>
+
+        <Border Background="White" CornerRadius="8" Padding="18,12" Width="190"
+                BoxShadow="0 2 6 0 #14000000">
+          <StackPanel>
+            <TextBlock Text="Доходы" Foreground="#64748B" FontSize="12"/>
+            <TextBlock Text="{Binding Income, StringFormat='+{0:N2} ₽'}"
+                       FontSize="22" FontWeight="Bold" Foreground="#02C39A"/>
+          </StackPanel>
+        </Border>
+
+        <Border Background="White" CornerRadius="8" Padding="18,12" Width="190"
+                BoxShadow="0 2 6 0 #14000000">
+          <StackPanel>
+            <TextBlock Text="Расходы" Foreground="#64748B" FontSize="12"/>
+            <TextBlock Text="{Binding Expense, StringFormat='{}{0:N2} ₽'}"
+                       FontSize="22" FontWeight="Bold" Foreground="#EF4444"/>
+          </StackPanel>
+        </Border>
+
+      </StackPanel>
+    </Border>
+
+    <!-- Основная область -->
+    <Grid ColumnDefinitions="*,Auto" Margin="20,0,20,12">
+
+      <!-- Левая часть: кнопки + таблица -->
+      <Grid RowDefinitions="Auto,*">
+
+        <!-- Кнопки CRUD -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,10">
+          <Button Content="+ Добавить"    Command="{Binding AddCommand}"
+                  Background="#028090" Foreground="White"
+                  Padding="16,8" CornerRadius="6"/>
+          <Button Content="✏ Редактировать" Command="{Binding EditCommand}"
+                  Background="White" Foreground="#028090"
+                  BorderBrush="#028090" BorderThickness="1.5"
+                  Padding="14,8" CornerRadius="6"/>
+          <Button Content="🗑 Удалить"    Command="{Binding DeleteCommand}"
+                  Background="White" Foreground="#EF4444"
+                  BorderBrush="#EF4444" BorderThickness="1.5"
+                  Padding="14,8" CornerRadius="6"/>
+        </StackPanel>
+
+        <!-- Таблица -->
+        <Border Grid.Row="1" Background="White" CornerRadius="8"
+                BoxShadow="0 1 4 0 #12000000" ClipToBounds="True">
+          <DataGrid ItemsSource="{Binding Transactions}"
+                    SelectedItem="{Binding SelectedTransaction}"
+                    IsReadOnly="True"
+                    AutoGenerateColumns="False"
+                    GridLinesVisibility="Horizontal"
+                    SelectionMode="Single"
+                    Background="White">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Дата"
+                                  Binding="{Binding Date, StringFormat='{}{0:dd.MM.yyyy}'}"
+                                  Width="105"/>
+              <DataGridTextColumn Header="Категория"
+                                  Binding="{Binding Category}"
+                                  Width="130"/>
+              <DataGridTextColumn Header="Тип"
+                                  Binding="{Binding Type}"
+                                  Width="90"/>
+              <DataGridTextColumn Header="Сумма (₽)"
+                                  Binding="{Binding Amount, StringFormat='{}{0:N2}'}"
+                                  Width="110"/>
+              <DataGridTextColumn Header="Описание"
+                                  Binding="{Binding Description}"
+                                  Width="*"/>
+            </DataGrid.Columns>
+          </DataGrid>
+        </Border>
+
+      </Grid>
+
+      <!-- Форма добавления/редактирования -->
+      <Border Grid.Column="1"
+              IsVisible="{Binding FormVisible}"
+              Background="White" CornerRadius="10"
+              BoxShadow="0 2 10 0 #20000000"
+              Padding="20" Margin="14,0,0,0"
+              Width="270" VerticalAlignment="Top">
+        <StackPanel Spacing="12">
+
+          <TextBlock Text="Операция" FontSize="16" FontWeight="Bold" Foreground="#0B2B33"/>
+
+          <StackPanel Spacing="4">
+            <TextBlock Text="Дата (дд.мм.гггг)" FontSize="12" Foreground="#64748B"/>
+            <TextBox Text="{Binding FormDate}" Background="#F1F5F9"
+                     CornerRadius="6" Padding="10,6"/>
+          </StackPanel>
+
+          <StackPanel Spacing="4">
+            <TextBlock Text="Категория" FontSize="12" Foreground="#64748B"/>
+            <ComboBox ItemsSource="{Binding Categories}"
+                      SelectedItem="{Binding FormCategory}"
+                      HorizontalAlignment="Stretch"/>
+          </StackPanel>
+
+          <StackPanel Spacing="4">
+            <TextBlock Text="Тип" FontSize="12" Foreground="#64748B"/>
+            <ComboBox ItemsSource="{Binding Types}"
+                      SelectedItem="{Binding FormType}"
+                      HorizontalAlignment="Stretch"/>
+          </StackPanel>
+
+          <StackPanel Spacing="4">
+            <TextBlock Text="Сумма (₽)" FontSize="12" Foreground="#64748B"/>
+            <TextBox Text="{Binding FormAmount}" Watermark="0.00"
+                     Background="#F1F5F9" CornerRadius="6" Padding="10,6"/>
+          </StackPanel>
+
+          <StackPanel Spacing="4">
+            <TextBlock Text="Описание" FontSize="12" Foreground="#64748B"/>
+            <TextBox Text="{Binding FormDescription}" Watermark="Комментарий..."
+                     Background="#F1F5F9" CornerRadius="6" Padding="10,6"
+                     Height="60" AcceptsReturn="True" TextWrapping="Wrap"/>
+          </StackPanel>
+
+          <TextBlock Text="{Binding Status}" Foreground="#EF4444" FontSize="12"
+                     TextWrapping="Wrap"/>
+
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <Button Content="Сохранить" Command="{Binding SaveCommand}"
+                    Background="#028090" Foreground="White"
+                    Padding="14,8" CornerRadius="6"/>
+            <Button Content="Отмена" Command="{Binding CancelCommand}"
+                    Background="White" Foreground="#028090"
+                    BorderBrush="#028090" BorderThickness="1.5"
+                    Padding="10,8" CornerRadius="6"/>
+          </StackPanel>
+
+        </StackPanel>
+      </Border>
+
+    </Grid>
+  </DockPanel>
+</Window>
